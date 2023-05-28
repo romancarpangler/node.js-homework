@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const app = require("./app");
 
+
 const { host } = process.env;
 mongoose
   .connect(host)
