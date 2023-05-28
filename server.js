@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 const app = require("./app");
 
-const db =
-  "mongodb+srv://roman:Noro2005@cluster0.n6tskri.mongodb.net/home-work-contacts?retryWrites=true&w=majority";
 
+const { host } = process.env;
 mongoose
-  .connect(db)
+  .connect(host)
   .then(() => {
     app.listen(3000, () => {
       console.log("Server running. Use our API on port: 3000");
