@@ -1,4 +1,5 @@
 const contacts = require("../service/index");
+const { httpError } = require("../helpers/httpsError");
 
 const getAllcontacts = async (req, res, next) => {
   try {
@@ -12,13 +13,11 @@ const getAllcontacts = async (req, res, next) => {
 const getContactById = async (req, res, next) => {
   try {
     const { id } = req.params;
+
     const result = await contacts.getContactById(id);
-    const s = typeof result;
-    console.log(s);
-    if (NaN) {
-      const error = new Error("Not found");
-      error.status = 404;
-      throw error;
+
+    if (!result) {
+      throw httpError(404, "Not found");
     }
     res.json(result);
   } catch (error) {
@@ -40,9 +39,7 @@ const deleteContact = async (req, res, next) => {
     const { id } = req.params;
     const result = await contacts.removeContact(id);
     if (!result) {
-      const error = new Error("Not found");
-      error.status = 404;
-      throw error;
+      throw httpError(404, "Not found");
     }
     res.json({ massage: "contact deleted" });
   } catch (error) {
@@ -57,9 +54,24 @@ const updateContact = async (req, res, next) => {
     const result = await contacts.updateContact(id, req.body);
 
     if (!result) {
-      const error = new Error("Not found");
-      error.status = 404;
-      throw error;
+      throw httpError(404, "Not found");
+    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateStatusContact = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const bodyLength = Boolean(Object.keys(req.body).length);
+    if (!bodyLength) {
+      throw httpError(400, "missing field favorite");
+    }
+    const result = await contacts.updateFavorite(id, req.body);
+    if (!result) {
+      throw httpError(404, "Not found");
     }
     res.json(result);
   } catch (error) {
@@ -73,4 +85,5 @@ module.exports = {
   createContact,
   deleteContact,
   updateContact,
+  updateStatusContact,
 };
