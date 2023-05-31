@@ -13,7 +13,9 @@ const getContactById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const result = await contacts.getContactById(id);
-    if (!result) {
+    const s = typeof result;
+    console.log(s);
+    if (NaN) {
       const error = new Error("Not found");
       error.status = 404;
       throw error;

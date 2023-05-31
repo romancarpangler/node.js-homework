@@ -11,7 +11,7 @@ const getContactById = async (id) => {
 };
 
 const removeContact = async (id) => {
-  const response = await Contact.remove({ _id: id });
+  const response = await Contact.findByIdAndRemove(id);
   return response;
 };
 
@@ -21,7 +21,7 @@ const addContact = async (body) => {
 };
 
 const updateContact = async (id, data) => {
-  const response = Contact.update({ _id: id }, data);
+  const response = Contact.findByIdAndUpdate({ _id: id }, data);
   return response;
 };
 
