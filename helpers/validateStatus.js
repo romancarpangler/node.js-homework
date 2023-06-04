@@ -5,7 +5,7 @@ const { httpError } = require("./httpsError");
 const scheme = Joi.object({
   favorite: Joi.boolean()
     .required()
-    .messages({ "any.required": "missing required name favorite" }),
+    .messages({ "any.required": "missing field favorite" }),
 });
 
 const validatStatus = (req, res, next) => {
