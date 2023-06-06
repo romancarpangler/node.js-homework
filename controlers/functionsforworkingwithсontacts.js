@@ -1,9 +1,10 @@
-const contacts = require("../service/index");
+const Contact = require("../shema/contacts");
 const { httpError } = require("../helpers/httpsError");
 
 const getAllcontacts = async (req, res, next) => {
   try {
-    const result = await contacts.listContacts();
+    const { _id: owner } = req.user;
+    const result = await Contact.find({ owner });
     res.json(result);
   } catch (error) {
     next(error);
@@ -14,7 +15,7 @@ const getContactById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const result = await contacts.getContactById(id);
+    const result = await Contact.findById(id);
 
     if (!result) {
       throw httpError(404, "Not found");
@@ -27,7 +28,8 @@ const getContactById = async (req, res, next) => {
 
 const createContact = async (req, res, next) => {
   try {
-    const result = await contacts.addContact(req.body);
+    const { _id: owner } = req.user;
+    const result = await Contact.create({ ...req.body, owner });
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -37,7 +39,7 @@ const createContact = async (req, res, next) => {
 const deleteContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contacts.removeContact(id);
+    const result = await Contact.findByIdAndRemove(id);
     if (!result) {
       throw httpError(404, "Not found");
     }
@@ -51,7 +53,9 @@ const updateContact = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const result = await contacts.updateContact(id, req.body);
+    const result = await Contact.findByIdAndUpdate({ _id: id }, req.body, {
+      new: true,
+    });
 
     if (!result) {
       throw httpError(404, "Not found");
@@ -69,7 +73,9 @@ const updateStatusContact = async (req, res, next) => {
     if (!bodyLength) {
       throw httpError(400, "missing field favorite");
     }
-    const result = await contacts.updateFavorite(id, req.body);
+    const result = await Contact.findByIdAndUpdate({ _id: id }, req.body, {
+      new: true,
+    });
     if (!result) {
       throw httpError(404, "Not found");
     }

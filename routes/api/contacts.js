@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const validate = require("../../helpers/validateBody");
-const validateStatus = require("../../helpers/validateStatus");
-const id = require("../../helpers/validateid");
+const validate = require("../../middlewares/validateBody");
+const validateStatus = require("../../middlewares/validateStatus");
+const id = require("../../middlewares/validateid");
 const contacts = require("../../controlers/functionsforworkingwithсontacts");
+const authenticate = require("../../middlewares/authenticate");
+
+router.use(authenticate);
 
 router.get("/", contacts.getAllcontacts);
 
