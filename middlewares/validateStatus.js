@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const { httpError } = require("./httpsError");
+const { httpError } = require("../helpers/httpsError");
 
 const scheme = Joi.object({
   favorite: Joi.boolean()
