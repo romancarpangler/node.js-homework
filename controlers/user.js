@@ -16,12 +16,14 @@ const registerUser = async (req, res, next) => {
 
     const result = await User.create(req.body);
 
-    const users = {
-      email: result.email,
-      subscription: result.subscription,
+    const w = {
+      users: {
+        email: result.email,
+        subscription: result.subscription,
+      },
     };
 
-    res.status(201).json(users);
+    res.status(201).json(w);
   } catch (error) {
     next(error);
   }
