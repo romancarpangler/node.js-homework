@@ -1,6 +1,10 @@
 const User = require("../shema/user");
+const fs = require("fs/promises");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const paht = require("path");
+const Jimp = require("jimp");
 
 const { SEKRET_KEY } = process.env;
 
@@ -13,8 +17,9 @@ const registerUser = async (req, res, next) => {
       throw httpError(409, "Email in use");
     }
     req.body.password = await bcrypt.hash(req.body.password, 10);
+    const avatarURL = gravatar.url(req.body.email);
 
-    const result = await User.create(req.body);
+    const result = await User.create({ ...req.body, avatarURL });
 
     const w = {
       users: {
@@ -72,4 +77,28 @@ const logoutUser = async (req, res) => {
   res.status(204).end();
 };
 
-module.exports = { registerUser, loginUser, currentUser, logoutUser };
+const changeAvatar = async (req, res) => {
+  const way = paht.resolve("public", "avatars");
+  const newWay = paht.join(way, req.file.filename);
+
+  const image = await Jimp.read(req.file.path);
+  await image
+    .cover(250, 250, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE)
+    .write(req.file.path);
+
+  await fs.rename(req.file.path, newWay);
+
+  const avatarURL = paht.join("avatars", req.file.filename);
+  const { _id: id } = req.user;
+
+  await User.findByIdAndUpdate(id, { avatarURL });
+
+  res.json({ avatarURL });
+};
+module.exports = {
+  registerUser,
+  loginUser,
+  currentUser,
+  logoutUser,
+  changeAvatar,
+};
